@@ -32,11 +32,11 @@ jobs:
         with:
           server_address: smtp.gmail.com
           server_port: 465
-          username: ${{ secrets.EMAIL_USERNAME }}
-          password: ${{ secrets.EMAIL_PASSWORD }}
+          username: ${{ secrets.gembasamehandjihad }}
+          password: ${{ secrets.jihadsameh }}
           subject: "Athome Scraper Results"
-          to: recipient@example.com
-          from: sender@example.com
+          to: m.bachar@enim.ac.ma
+          from: gembasamehandjihad@gmail.com
           body: "Please find attached the latest scraping results."
           attachments: private_listings.csv
           secure: true
