@@ -25,18 +25,18 @@ jobs:
           pip install selenium
 
       - name: Run scraper
-        run: python athome_scraper13.py
+        run: python athome_scraper12.py
 
       - name: Send email with CSV attachment
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: smtp.gmail.com
           server_port: 465
-          username: ${{ secrets.gembasamehandjihad }}
-          password: ${{ secrets.jihadsameh }}
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
           subject: "Athome Scraper Results"
-          to: m.bachar@enim.ac.ma
-          from: gembasamehandjihad@gmail.com
+          to: m.bachar2012@gmail.com
+          from: m.bachar2012@gmail.com
           body: "Please find attached the latest scraping results."
           attachments: private_listings.csv
           secure: true
