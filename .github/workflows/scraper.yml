@@ -1,0 +1,42 @@
+name: Run Athome Scraper
+
+on:
+  schedule:
+    # This cron runs roughly every 2 days (UTC time)
+    - cron: '0 0 */2 * *'
+  workflow_dispatch:
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install selenium
+
+      - name: Run scraper
+        run: python athome_scraper12.py
+
+      - name: Send email with CSV attachment
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: "Athome Scraper Results"
+          to: recipient@example.com
+          from: sender@example.com
+          body: "Please find attached the latest scraping results."
+          attachments: private_listings.csv
+          secure: true
