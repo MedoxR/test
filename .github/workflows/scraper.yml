@@ -25,7 +25,7 @@ jobs:
           pip install selenium
 
       - name: Run scraper
-        run: python athome_scraper12.py
+        run: python athome_scraper13.py
 
       - name: Send email with CSV attachment
         uses: dawidd6/action-send-mail@v3
