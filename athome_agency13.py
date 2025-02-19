@@ -81,9 +81,13 @@ for page in range(max_page, 0, -1):
         
         # Check if any found marker is visible and contains the expected text.
         for marker in markers:
-            if marker.is_displayed() and "Particulier opposé au démarchage commercial" in marker.text:
-                is_private = True
-                break
+    if marker.is_displayed() and (
+        "Particulier opposé au démarchage commercial" in marker.text or
+        "Particulier" in marker.text
+    ):
+        is_private = True
+        break
+
 
         if is_private:
             print("Private listing found:", detail_link)
