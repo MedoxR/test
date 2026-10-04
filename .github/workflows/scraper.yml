@@ -35,7 +35,7 @@ jobs:
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
           subject: "Athome Scraper Results"
-          to: m.bachar2012@gmail.com, skrirach@gmail.com, m.bachar@enim.ac.ma
+          to: m.bachar2012@gmail.com, m.bachar@enim.ac.ma
           from: m.bachar2012@gmail.com
           body: "Please find attached the latest scraping results."
           attachments: private_listings.csv
