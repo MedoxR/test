@@ -8,14 +8,11 @@ from selenium.common.exceptions import NoSuchElementException
 # -------------------------------
 # USER CONFIGURATION
 # -------------------------------
-# Set up Chrome options for headless mode (required for cloud environments)
 options = Options()
 options.add_argument('--headless')
 options.add_argument('--no-sandbox')
 options.add_argument('--disable-dev-shm-usage')
 
-# Initialize the Chrome driver.
-# On GitHub Actions, a compatible version of Chrome and its driver are pre-installed.
 driver = webdriver.Chrome(options=options)
 
 # Base URL without the page parameter
@@ -41,18 +38,17 @@ except Exception as e:
 
 print(f"Detected max page number: {max_page}")
 if max_page == 1:
-    max_page = 40  # Fallback if pagination isn't detected
+    max_page = 40
     print("Fallback: setting max page to 40.")
 
 print(f"Starting scraping from page {max_page} to 1...")
 
-# Loop from last page down to page 1.
 for page in range(max_page, 0, -1):
     print(f"Scraping page {page}...")
     url = base_url + f"&page={page}"
     driver.get(url)
     time.sleep(3)
-    
+
     listings = driver.find_elements(By.CSS_SELECTOR, "article.property-article")
     if not listings:
         print(f"No listings found on page {page}. Skipping.")
@@ -62,32 +58,24 @@ for page in range(max_page, 0, -1):
         try:
             title_elem = listing.find_element(By.CSS_SELECTOR, "a.property-title")
             detail_link = title_elem.get_attribute("href")
-            fallback_title = title_elem.text.strip()  # Save fallback title
+            fallback_title = title_elem.text.strip()
         except Exception as e:
             print("Skipping listing; couldn't extract title/detail link:", e)
             continue
 
-        # Open the detail page in a new tab
         driver.execute_script("window.open('{}');".format(detail_link))
         driver.switch_to.window(driver.window_handles[-1])
-        time.sleep(5)  # Give the detail page time to load
+        time.sleep(5)
 
-        is_private = False
-        # First try the narrow selector (if the element is in a specific container)
-        markers = driver.find_elements(By.CSS_SELECTOR, "div.sticky p.private-opposed-agencies-requests")
-        # If not found, try a broader search.
-        if not markers:
-            markers = driver.find_elements(By.CSS_SELECTOR, "p.private-opposed-agencies-requests")
-        
-        # Check if any found marker is visible and contains the expected text.
-        for marker in markers:
-            if marker.is_displayed() and (
-                "Particulier opposé au démarchage commercial" in marker.text or
-                "Particulier" in marker.text
-            ):
-                is_private = True
-                break
+        # Detect private-owner listings from the rendered page text instead of
+        # relying on atHome's CSS classes, which can change without notice.
+        try:
+            page_text = driver.find_element(By.TAG_NAME, "body").text
+        except Exception as e:
+            print("Could not read detail page body:", e)
+            page_text = ""
 
+        is_private = "Particulier opposé au démarchage commercial" in page_text
 
         if is_private:
             print("Private listing found:", detail_link)
