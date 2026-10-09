@@ -24,8 +24,31 @@ jobs:
           python -m pip install --upgrade pip
           pip install selenium
 
+      - name: Restore previous listing history
+        uses: actions/cache/restore@v4
+        with:
+          path: previous_private_listings.json
+          key: private-listings-${{ github.run_id }}
+          restore-keys: |
+            private-listings-
+
       - name: Run scraper
         run: python athome_agency13.py
+
+      - name: Save listing history for the next run
+        uses: actions/cache/save@v4
+        with:
+          path: previous_private_listings.json
+          key: private-listings-${{ github.run_id }}
+
+      - name: Upload CSV and history for inspection
+        uses: actions/upload-artifact@v4
+        with:
+          name: private-listings-${{ github.run_id }}
+          path: |
+            private_listings.csv
+            previous_private_listings.json
+          retention-days: 30
 
       - name: Send email with CSV attachment
         uses: dawidd6/action-send-mail@v3
